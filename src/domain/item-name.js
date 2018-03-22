@@ -9,10 +9,12 @@ class ItemName {
   }
 }
 
-module.exports = {
-  ItemName,
-  
-  create (arguments) {
-    return Object.freeze(new ItemName(arguments))
+module.exports = {  
+  assertType (itemName) {
+    assert(itemName instanceof ItemName)
+  },
+
+  create (value) {
+    return Object.freeze(new ItemName(value))
   }
 }

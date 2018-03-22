@@ -1,13 +1,13 @@
 const assert = require('assert')
 
 class ItemPrice {
-  constructor(price) {
-    assert(typeof price !== 'undefined', 'ItemPrice must not be undefined')
-    assert(price !== null, 'ItemPrice must not be null')
-    assert(typeof price === 'number', 'ItemPrice must be numeric')
-    assert(price >= 0, 'ItemPrice must be positive')
+  constructor(itemPrice) {
+    assert(typeof itemPrice !== 'undefined', 'ItemPrice must not be undefined')
+    assert(itemPrice !== null, 'ItemPrice must not be null')
+    assert(typeof itemPrice === 'number', 'ItemPrice must be numeric')
+    assert(itemPrice >= 0, 'ItemPrice must be positive')
 
-    this._price = Math.floor(price * 100)
+    this._price = Math.floor(itemPrice * 100)
   }
 
   get value () {
@@ -16,7 +16,9 @@ class ItemPrice {
 }
 
 module.exports = {
-  ItemPrice,
+  assertType (itemPrice) {
+    assert(itemPrice instanceof ItemPrice)
+  },
   
   create (arguments) {
     return Object.freeze(new ItemPrice(arguments))

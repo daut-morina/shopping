@@ -3,6 +3,7 @@ const { expect } = require('chai')
 const Item = require('../../src/domain/item')
 const ItemName = require('../../src/domain/item-name')
 const ItemPrice = require('../../src/domain/item-price')
+const LineItem = require('../../src/domain/line-item')
 const Quantity = require('../../src/domain/quantity')
 const ShoppingBasket = require('../../src/domain/shopping-basket')
 
@@ -22,13 +23,12 @@ describe('ShoppingBasket', function () {
       const item = Item.create({ 
         name: ItemName.create('Banana'), 
         price: ItemPrice.create(0.15)
-      })
-      
+      })      
       const quantity = Quantity.create(2)
+      const lineItem = LineItem.create({ item, quantity })
       let shoppingBasket
-
       shoppingBasket = ShoppingBasket.create()      
-      shoppingBasket = ShoppingBasket.addItem(shoppingBasket, { item, quantity })
+      shoppingBasket = ShoppingBasket.addItem(shoppingBasket, lineItem)
 
       expect(shoppingBasket.items.length).to.equal(1)
 
@@ -42,14 +42,17 @@ describe('ShoppingBasket', function () {
         price: ItemPrice.create(0.15)
       })
       
-      let quantity, shoppingBasket
+      let lineItem, quantity, shoppingBasket
 
       shoppingBasket = ShoppingBasket.create()
+      
       quantity = Quantity.create(5)
-      shoppingBasket = ShoppingBasket.addItem(shoppingBasket, { item, quantity })
+      lineItem = LineItem.create({ item, quantity })
+      shoppingBasket = ShoppingBasket.addItem(shoppingBasket, lineItem)
       
       quantity = Quantity.create(2)
-      shoppingBasket = ShoppingBasket.addItem(shoppingBasket, { item, quantity })
+      lineItem = LineItem.create({ item, quantity })
+      shoppingBasket = ShoppingBasket.addItem(shoppingBasket, lineItem)
 
       expect(shoppingBasket.items.length).to.equal(1)
 
@@ -68,10 +71,11 @@ describe('ShoppingBasket', function () {
       })
 
       const quantity = Quantity.create(3)
+      const lineItem = LineItem.create({ item, quantity })
       let shoppingBasket 
 
       shoppingBasket = ShoppingBasket.create()      
-      shoppingBasket = ShoppingBasket.addItem(shoppingBasket, { item, quantity })
+      shoppingBasket = ShoppingBasket.addItem(shoppingBasket, lineItem)
 
       expect(shoppingBasket.items.length).to.equal(1)
 
@@ -90,6 +94,8 @@ describe('ShoppingBasket', function () {
         price: ItemPrice.create(0.15)
       })
 
+      const quantity10 = Quantity.create(10)
+
       const papaya = Item.create({ 
         name: ItemName.create('Papaya'), 
         price: ItemPrice.create(0.50), 
@@ -98,18 +104,17 @@ describe('ShoppingBasket', function () {
           return multiplier * 0.50
         } 
       })
+
+      const quantity5 = Quantity.create(5)
+
+      const bananas = LineItem.create({ item: banana, quantity: quantity10 })
+      const papayas = LineItem.create({ item: papaya, quantity: quantity5 })
       
       let shoppingBasket
 
       shoppingBasket = ShoppingBasket.create()   
-      shoppingBasket = ShoppingBasket.addItem(shoppingBasket, { 
-        item: banana, 
-        quantity: Quantity.create(10)
-      })   
-      shoppingBasket = ShoppingBasket.addItem(shoppingBasket, { 
-        item: papaya, 
-        quantity: Quantity.create(5) 
-      })
+      shoppingBasket = ShoppingBasket.addItem(shoppingBasket, bananas)   
+      shoppingBasket = ShoppingBasket.addItem(shoppingBasket, papayas)
 
       const receipt = ShoppingBasket.printReceipt(shoppingBasket)
       expect(receipt).to.equal(expectedReceipt)

@@ -1,14 +1,14 @@
 const assert = require('assert')
 
-const { ItemName } = require('./item-name')
-const { ItemPrice } = require('./item-price')
+const ItemName = require('./item-name')
+const ItemPrice = require('./item-price')
 
 class Item {
   constructor ({ name, price, discount = () => 0 } = {}) {
-    assert(name instanceof ItemName, 'Name must be an ItemName')
+    ItemName.assertType(name)
     this.name = name
 
-    assert(price instanceof ItemPrice, 'Price must an ItemPrice')
+    ItemPrice.assertType(price)
     this.price = price
 
     assert(typeof discount === 'function', 'applyDiscount must be a function')
@@ -17,7 +17,9 @@ class Item {
 }
 
 module.exports = {  
-  Item,
+  assertType (item) {
+    assert(item instanceof Item)
+  },
   
   create (arguments) {
     return Object.freeze(new Item(arguments))

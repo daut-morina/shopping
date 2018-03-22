@@ -3,7 +3,8 @@ const { format } = require('util')
 
 const columnify = require('columnify')
 
-const { Item } = require('./item')
+const Item = require('./item')
+const LineItem = require('./line-item')
 const Quantity = require('./quantity')
 
 class ShoppingBasket {
@@ -17,22 +18,26 @@ class ShoppingBasket {
 }
 
 module.exports = {
-  addItem (shoppingBasket, { item, quantity } = {}) {
-    assert(shoppingBasket instanceof ShoppingBasket, 'shoppingBasket must be ShoppingBasket')
-    assert(item instanceof Item, `${item} must be an Item`)
-    assert(quantity instanceof Quantity.Quantity)
+  assertType (shoppingBasket) {
+    assert(shoppingBasket instanceof ShoppingBasket)
+  },
+
+  addItem (shoppingBasket, lineItem) {
+    this.assertType(shoppingBasket)
+    LineItem.assertType(lineItem)
 
     let { items } = shoppingBasket
-    const itemInBasket = items.find((itemInBasket) => itemInBasket.item.name.value === item.name.value)
-    if (!itemInBasket) {
-      items.push({ item, quantity })
+    const lineItemInBasket = items.find((lineItemInBasket) => LineItem.equals(lineItemInBasket, lineItem))
+
+    if (!lineItemInBasket) {
+      items.push(lineItem)
     } else {
-      items = items.map((itemInBasket) => {
-        if (itemInBasket.item.name.value === item.name.value) {
-          return { item, quantity: Quantity.create(itemInBasket.quantity.value + quantity.value) }
+      items = items.map((lineItemInBasket) => {
+        if (LineItem.equals(lineItemInBasket, lineItem)) {
+          return LineItem.add(lineItemInBasket, lineItem.quantity) 
         }
 
-        return itemInBasket
+        return lineItemInBasket
       })
     }
 
@@ -53,8 +58,8 @@ module.exports = {
   },
 
   create () {
-    return new ShoppingBasket()
-  },
+    return Object.freeze(new ShoppingBasket())
+  }, 
 
   printReceipt (shoppingBasket) {
     assert(shoppingBasket instanceof ShoppingBasket)
